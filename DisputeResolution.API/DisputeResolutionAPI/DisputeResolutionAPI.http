@@ -1,0 +1,6 @@
+@DisputeResolutionAPI_HostAddress = http://localhost:5009
+
+GET {{DisputeResolutionAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
