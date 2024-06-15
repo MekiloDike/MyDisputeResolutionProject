@@ -8,8 +8,8 @@ namespace DisputeResolutionCore.Interface
         Task<TokenResponse> GetAccessToken();
         //get 3 different transactionbuilder.Services.AddScoped<IUserManagement, UserManagement>();
         Task<IpgTransactionResponse> GetIpgTransaction(IpgTransactionRequest request);
-        Task<AgencyBankingResponse> GetAgencyBankin(AgencyBankingRequest request);
-        Task<TransferTransactionResponse> GetIpTransaction(TransferTransactionRequest request);
+        Task<AgencyBankingResponse> GetAgencyBanking(AgencyBankingRequest request);        
+        Task<TransferTransactionResponse> GetTransferTransaction(TransferTransactionRequest request);
 
     }
 }

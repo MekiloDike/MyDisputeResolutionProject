@@ -1,185 +1,141 @@
-﻿using DisputeResolutionCore.Dto;
+﻿using Azure.Core;
+using DisputeResolutionCore.Dto;
 using DisputeResolutionCore.Interface;
+using DisputeResolutionInfrastructure.HttpServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Text.Json;
-using System.Web;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace DisputeResolutionCore.Implementation
 {
     public class Transaction : ITransaction
     {
         private readonly IConfiguration _config;
         private readonly ILogger<Transaction> _logger;
-        public Transaction(IConfiguration config, ILogger<Transaction> logger)
+        private readonly IHttpClientService _httpClientService;
+
+        public Transaction(IConfiguration config, ILogger<Transaction> logger, IHttpClientService httpClientService)
         {
             _config = config;
             _logger = logger;
+            _httpClientService = httpClientService;
         }
         public async Task<TokenResponse> GetAccessToken()
         {
-            var result = new TokenResponse();
-            try
-            {
-                var url = _config["AccessToken:url"];
-                var grant_type = _config["AccessToken:grantType"];
-                var scope = _config["AccessToken:scope"];
-                var username = _config["AccessToken:clientId"];
-                var password = _config["AccessToken:clientSecret"];
-
-                _logger.LogInformation("Http call to {url} to get token", url);
-                // Define the form data
-                var requestBody = new Dictionary<string, string>
-               {
-                     { "grant_type", $"{grant_type}" },
-                     { "scope", $"{scope}" }
-               };
-
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var httpManHandler = new HttpClientHandler();
-                // httpManHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                httpManHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-
-                // Create the HttpClient
-                using (HttpClient client = new HttpClient(httpManHandler) { Timeout = TimeSpan.FromSeconds(60) })
-                {
-                    // Set up Basic Authentication
-                    var authToken = Encoding.ASCII.GetBytes($"{username}:{password}");
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(authToken));
-
-                    // Convert the form data to x-www-form-urlencoded content
-                    HttpContent content = new FormUrlEncodedContent(requestBody);
-
-                    // Send the POST request
-                    HttpResponseMessage response = await client.PostAsync(url, content);
-
-                    // Check the response status
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Read the response content
-                        string responseContent = await response.Content.ReadAsStringAsync();
-                        //deserialize to the response object
-                        result = JsonConvert.DeserializeObject<TokenResponse>(responseContent);
-                        Console.WriteLine("Response: " + responseContent);
-                        return result;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error: " + response.StatusCode);
-                        return result;
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-                //log the execption;
-                _logger.LogError("An error occured: {error}", ex.Message);
-                return result;
-            }
+            var result = await _httpClientService.GetToken<TokenResponse>();
+            return result;
 
         }
-        public async Task<AgencyBankingResponse> GetAgencyBankin(AgencyBankingRequest request)
+        public async Task<AgencyBankingResponse> GetAgencyBanking(AgencyBankingRequest request)
         {
-            var result = new AgencyBankingResponse();
+            var agenyResponse = new AgencyBankingResponse();
             try
             {
                 var baseUrl = _config["Dispute:baseUrl"];
 
                 // _logger.LogInformation("Http call to {url} to get token", url);
                 // Define the request parameters
-                var startDate = request.date;
-                string endDate = request.date.ToString();
+                var date = DateConvert(request.date);
+
+                var startDate = date.startDate;
+                string endDate = date.endDate;
                 var terminal = request.terminal;
                 var pan = request.pan;
                 var stan = request.stan;
 
-                var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/TRANSFERS/channels/ALL?startDate={startDate}&endDate={endDate}&terminal={terminal}&pan={pan}&stan={stan}";
+                var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/AGENCY BANKING/channels/ALL?startDate={startDate}&endDate={endDate}&terminal={terminal}&pan={pan}&stan={stan}";
                 var tokenRespone = await GetAccessToken();
                 var token = tokenRespone.access_token;
                 var domain = tokenRespone.client_authorization_domain;
 
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                var httpManHandler = new HttpClientHandler();
-                // httpManHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-                httpManHandler.ServerCertificateCustomValidationCallback = (sender, cert, chain, sslPolicyErrors) => { return true; };
-
-                // Create the HttpClient
-                using (HttpClient client = new HttpClient(httpManHandler) { Timeout = TimeSpan.FromSeconds(60) })
-                {
-                    // Set up Basic Authentication
-                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", token);
-                    // Add custom header
-                    client.DefaultRequestHeaders.Add("X-Interswitch-Authorization-Domain", domain);
-
-                    // Send the Get request
-                    HttpResponseMessage response = await client.GetAsync(urlWithParams);
-
-                    // Check the response status
-                    if (response.IsSuccessStatusCode)
-                    {
-                        // Read the response content
-                        string responseContent = await response.Content.ReadAsStringAsync();
-                        //deserialize to the response object
-                        result = JsonConvert.DeserializeObject<AgencyBankingResponse>(responseContent);
-                        Console.WriteLine("Response: " + responseContent);
-                        return result;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Error: " + response.StatusCode);
-                        return result;
-                    }
-                }
+                agenyResponse = await _httpClientService.GetTransaction<AgencyBankingResponse>(urlWithParams, token, domain);
+                return agenyResponse;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
                 //log the execption;
                 _logger.LogError("An error occured: {error}", ex.Message);
-                return result;
+                return agenyResponse;
             }
 
         }
-
-        public Task<IpgTransactionResponse> GetIpgTransaction(IpgTransactionRequest request)
+        public async Task<IpgTransactionResponse> GetIpgTransaction(IpgTransactionRequest request)
         {
-            throw new NotImplementedException();
+            var baseUrl = _config["Dispute:baseUrl"];
+
+            // _logger.LogInformation("Http call to {url} to get token", url);
+            // Define the request parameters
+            var date = DateConvert(request.date);
+
+            var startDate = date.startDate;
+            string endDate = date.endDate;
+            var stan = request.stan;
+            var maskedCardPan = request.maskedCardPan;
+            var retrievalReferenceNumber = request.retrievalReferenceNumber;
+            var merchantCode = request.merchantCode;
+
+            var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/AGENCY BANKING/channels/ALL?startDate={startDate}&endDate={endDate}&maskedCardPan={maskedCardPan}&retrievalReferenceNumber={retrievalReferenceNumber}&stan={stan}&merchantCode={merchantCode}";
+            var tokenRespone = await GetAccessToken();
+            var token = tokenRespone.access_token;
+            var domain = tokenRespone.client_authorization_domain;
+
+            var ipgResponse = await _httpClientService.GetTransaction<IpgTransactionResponse>(urlWithParams, token, domain);
+            return ipgResponse;
         }
 
-        public Task<TransferTransactionResponse> GetTransferTransaction(TransferTransactionRequest request)
-        {
-            throw new NotImplementedException();
-        }
+
 
         //create a method to return the beginning of the day given a date
-
-        public class DisputeDate
-        {
-            public string StartDate { get; set; }
-            public string EndDate { get; set; }
-        }
-
-        public DisputeDate DateConverter(DateTime dateTime)
+        public (string startDate, string endDate) DateConvert(DateTime inputDate) //return as tuple
         {
             // Start of the day (midnight)
-            DateTime startDateTime = dateTime.Date;
+            string startDateTime = new DateTime(inputDate.Year, inputDate.Month, inputDate.Day, 0, 0, 0).ToString();
 
-            // End of the day (last moment of the day)
-            DateTime endDateTime = startDateTime.AddDays(1).AddTicks(-1);
+            // End of the day (23:59:59)
+            string endDateTime = new DateTime(inputDate.Year, inputDate.Month, inputDate.Day, 23, 59, 59).ToString();
+            return (startDateTime, endDateTime);
+        }
 
-            return new DisputeDate()
+
+        public async Task<TransferTransactionResponse> GetTransferTransaction(TransferTransactionRequest transferRequest)
+        {
+            var transferResult = new TransferTransactionResponse();
+            try
             {
-                StartDate = startDateTime.ToString(),
-                EndDate = endDateTime.ToString(),
-            };
+                var baseUrl = _config["Dispute:baseUrl"];
+
+                // _logger.LogInformation("Http call to {url} to get token", url);
+                // Define the request parameters
+                var date = DateConvert(transferRequest.date);
+
+                var startDate = date.startDate;
+                string endDate = date.endDate;
+                var terminal = transferRequest.terminal;
+                var pan = transferRequest.pan;
+                var stan = transferRequest.stan;
+
+                var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/TRANSFERS/channels/ALL?startDate={startDate}&endDate={endDate}&terminal={terminal}&pan={pan}&stan={stan}";
+                var tokenRespone = await GetAccessToken();
+                var token = tokenRespone.access_token;
+                var domain = tokenRespone.client_authorization_domain;
+
+                transferResult = await _httpClientService.GetTransaction<TransferTransactionResponse>(urlWithParams, token, domain);
+                return transferResult;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                //log the execption;
+                _logger.LogError("An error occured: {error}", ex.Message);
+                return transferResult;
+            }
 
         }
     }
+
+
 }
 

@@ -1,6 +1,7 @@
 using DisputeResolutionCore.DisputeContext;
 using DisputeResolutionCore.Implementation;
 using DisputeResolutionCore.Interface;
+using DisputeResolutionInfrastructure.HttpServices;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 
@@ -20,7 +21,7 @@ Log.Logger = new LoggerConfiguration()
            .ReadFrom.Configuration(configuration)
            .Enrich.FromLogContext()
            .WriteTo.Console()
-           .WriteTo.File("DisputeLogs/log-.txt", rollingInterval: RollingInterval.Day)
+           .WriteTo.File(" /log-.txt", rollingInterval: RollingInterval.Day)
            .CreateLogger();
 
 // Ensure that Serilog is the first thing configured
@@ -38,8 +39,8 @@ options.UseSqlServer(builder.Configuration.GetConnectionString("DisputeDbConnect
 // Add Interface
 builder.Services.AddScoped<IDispute, Dispute>();
 builder.Services.AddScoped<ITransaction, Transaction>();
-
-
+//builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
+builder.Services.AddScoped<IHttpClientService, HttpClientService>(); 
 
 var app = builder.Build();
 

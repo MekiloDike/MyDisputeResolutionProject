@@ -1,0 +1,4 @@
+2024-06-13 14:34:20.923 +01:00 [INF] Http call to https://sandbox.interswitchng.com/passport/oauth/token to get token
+2024-06-13 14:35:09.003 +01:00 [INF] TransactionController: About to get access token
+2024-06-13 14:35:09.004 +01:00 [INF] Http call to https://sandbox.interswitchng.com/passport/oauth/token to get token
+2024-06-13 14:35:59.985 +01:00 [INF] Http call to https://sandbox.interswitchng.com/passport/oauth/token to get token

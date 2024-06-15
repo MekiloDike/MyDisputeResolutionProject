@@ -1,4 +1,5 @@
-﻿using DisputeResolutionCore.Interface;
+﻿using DisputeResolutionCore.Dto;
+using DisputeResolutionCore.Interface;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -25,5 +26,33 @@ namespace DisputeResolutionAPI.Controllers
 
             return Ok(result);
         }
+
+
+
+        [HttpPost("Agency-Banking")] 
+        public async Task<IActionResult> GetAgencyBankin(AgencyBankingRequest agencyBanking)
+        {
+            var result = await _transaction.GetAgencyBanking(agencyBanking);
+            return Ok(result);
+
+        }
+
+        [HttpPost("Ipg-Transaction")]
+        public async Task<IActionResult> GetIpgTransaction(IpgTransactionRequest request)
+        {
+            var result = await _transaction.GetIpgTransaction(request);
+            return Ok(result);
+
+        }
+
+        [HttpPost("Transfer-Transaction")]
+        public async Task<IActionResult> GetTransferTransaction(TransferTransactionRequest transferRequest)
+        {
+            var result = await _transaction.GetTransferTransaction(transferRequest);
+            return Ok(result);
+
+        }
+
     }
+        
 }

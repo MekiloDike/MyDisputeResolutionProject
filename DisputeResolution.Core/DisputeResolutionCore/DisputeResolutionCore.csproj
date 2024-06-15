@@ -11,10 +11,8 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
-
-
-	<ItemGroup>
-	  <ProjectReference Include="..\..\DisputeResolution.API\DisputeResolutionInfrastructure\DisputeResolutionInfrastructure.csproj" />
-	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\DisputeResolution.API\DisputeResolutionInfrastructure\DisputeResolutionInfrastructure.csproj" />
+  </ItemGroup>
 </Project>
     

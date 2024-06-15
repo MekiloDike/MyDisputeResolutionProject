@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static DisputeResolutionCore.Implementation.Transaction;
 
 namespace DisputeResolutionCore.Dto
 {
     public class AgencyBankingRequest
     {
-        public int terminal { get; set; }
-        public int pan { get; set; }
+        public string terminal { get; set; }
+        public string pan { get; set; }
         public DateTime date { get; set; }
-        public int stan { get; set; }
+        public string stan { get; set; }
     }
 
     public class AgencyBankingResponse
