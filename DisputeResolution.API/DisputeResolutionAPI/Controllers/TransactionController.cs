@@ -1,5 +1,7 @@
 ﻿using DisputeResolutionCore.Dto;
 using DisputeResolutionCore.Interface;
+using DisputeResolutionCore.Utility;
+using DisputeResolutionInfrastructure.HttpServices;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -11,10 +13,14 @@ namespace DisputeResolutionAPI.Controllers
     {
         private readonly ITransaction _transaction;
         private readonly ILogger<TransactionController> _logger;
-        public TransactionController(ITransaction transaction, ILogger<TransactionController> logger)
+        private readonly IHttpClientService _httpClientService;
+        private readonly IDispute _Dispute;
+        public TransactionController(ITransaction transaction, ILogger<TransactionController> logger, IHttpClientService httpClientService,IDispute dispute)
         {
             _transaction = transaction;
             _logger = logger;
+            _httpClientService = httpClientService;
+            _Dispute = dispute;
         }
 
         [HttpPost("token")]
@@ -22,8 +28,10 @@ namespace DisputeResolutionAPI.Controllers
         public async Task<IActionResult> GetAccessTokenAsync()
         {
             _logger.LogInformation("TransactionController: About to get access token");
-            var result = await _transaction.GetAccessToken();
+            var tokenService = new TokenService(_httpClientService);
+            var result = await tokenService.GetAccessToken();
 
+            _logger.LogInformation("TransactionController: Access token gotten");
             return Ok(result);
         }
 
@@ -52,6 +60,13 @@ namespace DisputeResolutionAPI.Controllers
             return Ok(result);
 
         }
+
+        //[HttpGet("Create-Dispute")]
+        //public async Task<IActionResult> CreateDispute(CreateDisputeRequest request)
+        //{ 
+        //    var result = await _Dispute.CreateDispute();
+        //    return Ok(result);
+        //}
 
     }
         

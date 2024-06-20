@@ -1,6 +1,6 @@
-using DisputeResolutionCore.DisputeContext;
 using DisputeResolutionCore.Implementation;
 using DisputeResolutionCore.Interface;
+using DisputeResolutionInfrastructure.Context;
 using DisputeResolutionInfrastructure.HttpServices;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
@@ -33,7 +33,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add DbConnection
-builder.Services.AddDbContext<DisputeDbContext>(options =>
+builder.Services.AddDbContext<DisputeContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DisputeDbConnection")));
 
 // Add Interface

@@ -1,6 +1,7 @@
 ﻿using Azure.Core;
 using DisputeResolutionCore.Dto;
 using DisputeResolutionCore.Interface;
+using DisputeResolutionCore.Utility;
 using DisputeResolutionInfrastructure.HttpServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -15,18 +16,15 @@ namespace DisputeResolutionCore.Implementation
         private readonly IConfiguration _config;
         private readonly ILogger<Transaction> _logger;
         private readonly IHttpClientService _httpClientService;
+        private readonly TokenService _tokenService;
+        
 
         public Transaction(IConfiguration config, ILogger<Transaction> logger, IHttpClientService httpClientService)
         {
             _config = config;
             _logger = logger;
             _httpClientService = httpClientService;
-        }
-        public async Task<TokenResponse> GetAccessToken()
-        {
-            var result = await _httpClientService.GetToken<TokenResponse>();
-            return result;
-
+            _tokenService = new TokenService(_httpClientService);
         }
         public async Task<AgencyBankingResponse> GetAgencyBanking(AgencyBankingRequest request)
         {
@@ -46,10 +44,13 @@ namespace DisputeResolutionCore.Implementation
                 var stan = request.stan;
 
                 var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/AGENCY BANKING/channels/ALL?startDate={startDate}&endDate={endDate}&terminal={terminal}&pan={pan}&stan={stan}";
-                var tokenRespone = await GetAccessToken();
+               
+                var tokenService = new TokenService(_httpClientService);
+                var tokenRespone = await tokenService.GetAccessToken();
                 var token = tokenRespone.access_token;
                 var domain = tokenRespone.client_authorization_domain;
 
+                
                 agenyResponse = await _httpClientService.GetTransaction<AgencyBankingResponse>(urlWithParams, token, domain);
                 return agenyResponse;
             }
@@ -78,9 +79,11 @@ namespace DisputeResolutionCore.Implementation
             var merchantCode = request.merchantCode;
 
             var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/AGENCY BANKING/channels/ALL?startDate={startDate}&endDate={endDate}&maskedCardPan={maskedCardPan}&retrievalReferenceNumber={retrievalReferenceNumber}&stan={stan}&merchantCode={merchantCode}";
-            var tokenRespone = await GetAccessToken();
+            var tokenService = new TokenService(_httpClientService);
+            var tokenRespone = await tokenService.GetAccessToken();
             var token = tokenRespone.access_token;
             var domain = tokenRespone.client_authorization_domain;
+            
 
             var ipgResponse = await _httpClientService.GetTransaction<IpgTransactionResponse>(urlWithParams, token, domain);
             return ipgResponse;
@@ -118,7 +121,8 @@ namespace DisputeResolutionCore.Implementation
                 var stan = transferRequest.stan;
 
                 var urlWithParams = $"{baseUrl}/api/v1/transactions/groups/TRANSFERS/channels/ALL?startDate={startDate}&endDate={endDate}&terminal={terminal}&pan={pan}&stan={stan}";
-                var tokenRespone = await GetAccessToken();
+                var tokenService = new TokenService(_httpClientService);
+                var tokenRespone = await tokenService.GetAccessToken();
                 var token = tokenRespone.access_token;
                 var domain = tokenRespone.client_authorization_domain;
 
