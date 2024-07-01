@@ -5,10 +5,10 @@ namespace DisputeResolutionCore.Dto
     public class IpgTransactionRequest
     {
         public DateTime date { get; set; }
-        public int stan { get; set; }
-        public int maskedCardPan { get; set; }
-        public int retrievalReferenceNumber { get; set; }
-        public int merchantCode { get; set; }
+        public string stan { get; set; }
+        public string maskedCardPan { get; set; }
+        public string retrievalReferenceNumber { get; set; }
+        public string? merchantCode { get; set; }
         
     }
 

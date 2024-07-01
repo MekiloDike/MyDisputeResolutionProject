@@ -20,7 +20,7 @@ namespace DisputeResolutionCore.Dto
         public string? comment { get; set; }
         public string reasonCode { get; set; }
         public string category { get; set; }
-        public float disputeAmount { get; set; }
+        public decimal disputeAmount { get; set; }
     }
 
     public class CreateDisputeResponse

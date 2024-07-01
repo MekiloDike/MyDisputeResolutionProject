@@ -10,7 +10,7 @@ namespace DisputeResolutionCore.Interface
 {
     public interface IDispute
     {
-        Task CreateDispute(CreateDisputeRequest request);
+        Task<string> CreateDispute(CreateDisputeRequest request);
         Task<GetDisputeResponse> GetDispute(string logCode);
     }
 }

@@ -28,7 +28,7 @@ namespace DisputeResolutionCore.Implementation
             _httpClientService = httpClientService;
         }
 
-        public async Task CreateDispute(CreateDisputeRequest request)
+        public async Task<string> CreateDispute(CreateDisputeRequest request)
         {
             try 
             {
@@ -60,7 +60,8 @@ namespace DisputeResolutionCore.Implementation
                 var responseContent = await response.Content.ReadAsStringAsync();
 
                 //deserialize to the response object
-                var result = JsonConvert.DeserializeObject(responseContent);
+                var result = JsonConvert.DeserializeObject(responseContent);                
+                return "";
             }
             catch (Exception ex)
             {

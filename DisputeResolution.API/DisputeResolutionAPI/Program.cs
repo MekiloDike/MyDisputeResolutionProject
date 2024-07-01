@@ -41,6 +41,7 @@ builder.Services.AddScoped<IDispute, Dispute>();
 builder.Services.AddScoped<ITransaction, Transaction>();
 //builder.Services.AddScoped<IRedisCacheService, RedisCacheService>();
 builder.Services.AddScoped<IHttpClientService, HttpClientService>(); 
+builder.Services.AddScoped<ILogTransaction, LogTransaction>(); 
 
 var app = builder.Build();
 

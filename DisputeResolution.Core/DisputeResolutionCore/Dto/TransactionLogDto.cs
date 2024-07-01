@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿
 namespace DisputeResolutionCore.Dto
 {
     public class DisputeRequestLogDto
@@ -48,8 +43,8 @@ namespace DisputeResolutionCore.Dto
         public string? domainCode { get; set; }
         public string? status { get; set; }
         public DateTime statusStartDate { get; set; }
-        public List<EvidenceDto> evidence { get; set; }
-        public List<JournalDto> journal { get; set; }
+        public List<EvidenceDto?> evidence { get; set; }
+        public List<JournalDto?> journal { get; set; }
         public string? createdBy { get; set; }
         public DateTime createdOn { get; set; }
         public string? accountNumber { get; set; }
@@ -72,7 +67,6 @@ namespace DisputeResolutionCore.Dto
         public string? detail { get; set; }
         public string? addedBy { get; set; }
         public DateTime addedOn { get; set; }
-
     }
 
     public class GenericResponse<T>

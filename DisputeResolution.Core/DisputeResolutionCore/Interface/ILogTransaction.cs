@@ -11,6 +11,6 @@ namespace DisputeResolutionCore.Interface
     {
         Task<GenericResponse<bool>> CreateTransactionLog(DisputeRequestLogDto Request);
 
-        Task<GenericResponse<DisputeResponseLogDto>> GetLoggedTransaction(string transactionReference);`
+        Task<GenericResponse<DisputeResponseLogDto>> GetLoggedTransaction(string transactionReference);
     }
 }

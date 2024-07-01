@@ -8,10 +8,10 @@ namespace DisputeResolutionCore.Dto
 {
     public class TransferTransactionRequest
     {
-        public int terminal { get; set; }
-        public int pan { get; set; }
+        public string terminal { get; set; }
+        public string pan { get; set; }
         public DateTime date { get; set; }
-        public int stan { get; set; }
+        public string stan { get; set; }
     }
 
     public class TransferTransactionResponse
