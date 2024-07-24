@@ -1,0 +1,98 @@
+2024-07-23 17:02:15.724 +01:00 [INF] Start installing Hangfire SQL objects...
+2024-07-23 17:02:17.120 +01:00 [INF] Hangfire SQL objects installed.
+2024-07-23 17:02:17.810 +01:00 [INF] Starting Hangfire Server using job storage: 'SQL Server: LAPTOP-8SOO1TNC@DisputeResolutionJob'
+2024-07-23 17:02:17.811 +01:00 [INF] Using the following options for SQL Server job storage: Queue poll interval: 00:00:00.
+2024-07-23 17:02:17.812 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2024-07-23 17:02:18.039 +01:00 [INF] Server laptop-8soo1tnc:29516:49416434 successfully announced in 63.8019 ms
+2024-07-23 17:02:18.052 +01:00 [INF] Server laptop-8soo1tnc:29516:49416434 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, SqlServerHeartbeatProcess, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2024-07-23 17:02:18.094 +01:00 [INF] 1 servers were removed due to timeout
+2024-07-23 17:02:18.301 +01:00 [INF] Server laptop-8soo1tnc:29516:49416434 all the dispatchers started
+2024-07-23 17:02:18.980 +01:00 [WRN] Failed to process the job '1': an exception occurred. Retry attempt 5 of 10 will be performed in 00:05:01.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:02:18.978 +01:00 [WRN] Failed to process the job '2': an exception occurred. Retry attempt 2 of 10 will be performed in 00:01:10.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:02:18.978 +01:00 [WRN] Failed to process the job '3': an exception occurred. Retry attempt 1 of 10 will be performed in 00:00:28.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:02:48.967 +01:00 [WRN] Failed to process the job '3': an exception occurred. Retry attempt 2 of 10 will be performed in 00:01:04.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:02:52.364 +01:00 [WRN] Failed to process the job '4': an exception occurred. Retry attempt 1 of 10 will be performed in 00:00:26.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:03:18.980 +01:00 [WRN] Failed to process the job '4': an exception occurred. Retry attempt 2 of 10 will be performed in 00:00:22.
+System.InvalidOperationException: Unable to resolve service for type 'DisputeResolutionInfrastructure.Context.DisputeContext' while attempting to activate 'DisputeResolutionBackgroundService.Interface.DisputeRecurringJob'.
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.ConstructorMatcher.CreateInstance(IServiceProvider provider)
+   at Microsoft.Extensions.DependencyInjection.ActivatorUtilities.CreateInstance(IServiceProvider provider, Type instanceType, Object[] parameters)
+   at Hangfire.AspNetCore.AspNetCoreJobActivatorScope.Resolve(Type type) in C:\projects\hangfire-525\src\Hangfire.NetCore\AspNetCore\AspNetCoreJobActivatorScope.cs:line 34
+   at Hangfire.Server.CoreBackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\CoreBackgroundJobPerformer.cs:line 60
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_0.<PerformJobWithFilters>b__0() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 121
+   at Hangfire.Server.BackgroundJobPerformer.InvokePerformFilter(IServerFilter filter, PerformingContext preContext, Func`1 continuation) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 168
+   at Hangfire.Server.BackgroundJobPerformer.<>c__DisplayClass10_1.<PerformJobWithFilters>b__2() in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 126
+   at Hangfire.Server.BackgroundJobPerformer.PerformJobWithFilters(PerformContext context, IEnumerable`1 filters) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 125
+   at Hangfire.Server.BackgroundJobPerformer.Perform(PerformContext context) in C:\projects\hangfire-525\src\Hangfire.Core\Server\BackgroundJobPerformer.cs:line 78
+   at Hangfire.Server.Worker.PerformJob(BackgroundProcessContext context, IStorageConnection connection, String jobId, BackgroundJob backgroundJob, IReadOnlyDictionary`2& customData) in C:\projects\hangfire-525\src\Hangfire.Core\Server\Worker.cs:line 315
+2024-07-23 17:12:21.692 +01:00 [INF] Start installing Hangfire SQL objects...
+2024-07-23 17:12:22.250 +01:00 [INF] Hangfire SQL objects installed.
+2024-07-23 17:12:22.562 +01:00 [INF] Starting Hangfire Server using job storage: 'SQL Server: LAPTOP-8SOO1TNC@DisputeResolutionJob'
+2024-07-23 17:12:22.563 +01:00 [INF] Using the following options for SQL Server job storage: Queue poll interval: 00:00:00.
+2024-07-23 17:12:22.563 +01:00 [INF] Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2024-07-23 17:12:22.618 +01:00 [INF] Server laptop-8soo1tnc:19256:0941d6f5 successfully announced in 21.6913 ms
+2024-07-23 17:12:22.625 +01:00 [INF] Server laptop-8soo1tnc:19256:0941d6f5 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, SqlServerHeartbeatProcess, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2024-07-23 17:12:22.655 +01:00 [INF] 1 servers were removed due to timeout
+2024-07-23 17:12:22.758 +01:00 [INF] Server laptop-8soo1tnc:19256:0941d6f5 all the dispatchers started

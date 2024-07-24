@@ -74,7 +74,7 @@ namespace DisputeResolutionInfrastructure.Entity
         public DisputeResponseLog? DisputeResponseLog { get; set; }
     }
 
-    public class Journal
+    public class Journal 
     {
         [Key]
         public long id { get; set; }

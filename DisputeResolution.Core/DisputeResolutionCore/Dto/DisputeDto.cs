@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -52,7 +53,7 @@ namespace DisputeResolutionCore.Dto
             public string terminalType { get; set; }
             public string disputeAmountType { get; set; }
             public string disputeAmount { get; set; }
-            public Additionalinfo additionalInfo { get; set; }
+            public Additionalinfo? additionalInfo { get; set; }
             public string reasonCode { get; set; }
             public string reason { get; set; }
             public string category { get; set; }
@@ -61,8 +62,8 @@ namespace DisputeResolutionCore.Dto
             public string domainCode { get; set; }
             public string status { get; set; }
             public DateTime statusStartDate { get; set; }
-            public object[] evidence { get; set; }
-            public Journal[] journal { get; set; }
+            public EvidenceResponse[]? evidence { get; set; }
+            public JournalResponse[]? journal { get; set; }
             public string createdBy { get; set; }
             public DateTime createdOn { get; set; }
             public string accountNumber { get; set; }
@@ -87,15 +88,24 @@ namespace DisputeResolutionCore.Dto
             public string TerminalId { get; set; }
         }
 
-        public class Journal
+        public class JournalResponse
         {
             public int disputeId { get; set; }
             public string detail { get; set; }
             public string addedBy { get; set; }
             public DateTime addedOn { get; set; }
         }
+    public class EvidenceResponse
+    {
+        public long disputeId { get; set; }
+        public string? uuId { get; set; }
+        public string? mimeType { get; set; }
+        public string? tags { get; set; }
+        public string? base64EncodedBinary { get; set; }
+    }
 
-        public class Statusaction
+
+    public class Statusaction
         {
             public string action { get; set; }
             public string[] required { get; set; }

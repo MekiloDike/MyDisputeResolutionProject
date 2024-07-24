@@ -1,4 +1,5 @@
-﻿using DisputeResolutionCore.Dto;
+﻿using Azure.Core;
+using DisputeResolutionCore.Dto;
 using DisputeResolutionCore.Enum;
 using DisputeResolutionCore.Interface;
 using DisputeResolutionInfrastructure.Context;
@@ -25,10 +26,20 @@ namespace DisputeResolutionCore.Implementation
             _transaction = transaction;
             _Dispute = dispute;
         }
-        public async Task<GenericResponse<bool>> CreateTransactionLog(DisputeRequestLogDto Request)
+        public async Task<GenericResponse<bool>> CreateTransactionLog(DisputeRequestLogDto request)
         {
+            // check if there is an existing TransactionLogRefernce in the database table and return transaction with TransactionLogRefernce already logged
+            var loggedRequest = _dbContext.DisputeRequestLogs.FirstOrDefault( x => x.TransactionLogRefernce == request.TransactionLogRefernce);
+            if (loggedRequest != null)
+            {
+                return new GenericResponse<bool>
+                {
+                    IsSuccessful = false,
+                    Message = "TransactionLogRefernce already exist"
+                }; 
+            }
 
-            var transactionType = GetTransactionType(Request.TransactionLogRefernce);
+            var transactionType = GetTransactionType(request.TransactionLogRefernce);
             if (transactionType == TransactionType.Invalid)
             {
                 return new GenericResponse<bool>
@@ -38,22 +49,23 @@ namespace DisputeResolutionCore.Implementation
                 };
             }
 
-
             // map DisputeRequestLogDto to DisputeRequestLog Entity
             var disputeRequestLog = new DisputeResquestLog
             {
-                Stan = Request.Stan,
-                MaskCardPan = Request.MaskCardPan,
-                TerminalId = Request.TerminalId,
-                TransactionDate = Request.TransactionDate,
-                TransactionLogRefernce = Request.TransactionLogRefernce,
-                RetrivalNumber = Request.RetrivalNumber,
-                Amount = Request.Amount,
+                Stan = request.Stan, 
+                MaskCardPan = request.MaskCardPan,
+                TerminalId = request.TerminalId,
+                TransactionDate = request.TransactionDate,
+                TransactionLogRefernce = request.TransactionLogRefernce,
+                RetrivalNumber = request.RetrivalNumber,
+                Amount = request.Amount,
                 TransactionType = transactionType.ToString(),
                 IsDisputeCreated = false
             };
+           
             await _dbContext.DisputeRequestLogs.AddAsync(disputeRequestLog);
             var saved = _dbContext.SaveChanges() > 0;
+
             var result = new GenericResponse<bool>
             {
                 IsSuccessful = saved,
@@ -61,158 +73,15 @@ namespace DisputeResolutionCore.Implementation
 
             };
 
-            //call get transaction
-            if (transactionType == TransactionType.AgencyBanking)
-            {
-
-                var agencyBankingRequest = new AgencyBankingRequest()
-                {
-                    date = Request.TransactionDate,
-                    pan = Request.MaskCardPan,
-                    stan = Request.Stan,
-                    terminal = Request.TerminalId,
-                };
-                //get the transaction from interswitch
-                var transactionResponse = await _transaction.GetAgencyBanking(agencyBankingRequest);
-
-                if (transactionResponse == null)
-                {
-                    return result;
-                }
-
-                //create dispute
-                var createDisputeRequest = new CreateDisputeRequest
-                {
-                    comment = "",
-                    reasonCode = "RG",
-                    transactionReference = transactionResponse.transactionReference,
-                    disputeAmount = Request.Amount,
-                    disputeAmountType = "Full",
-                    category = "Chargeback",
-                    transactionType = transactionResponse.transactionType,
-                };
-                var logCode = await _Dispute.CreateDispute(createDisputeRequest);
-
-                if(string.IsNullOrEmpty(logCode))
-                {
-                    return result;
-                }
-                //if successful update the request log table, isDisputeCreated = true
-                disputeRequestLog.IsDisputeCreated = true;
-                _dbContext.DisputeRequestLogs.Update(disputeRequestLog);
-                await _dbContext.SaveChangesAsync();
-
-                //save the logcode to the response log with status = Pending
-                var disputeResponse = new DisputeResponseLog
-                {
-                    logCode = logCode,
-                    status = "PENDING",
-                    transactionLogReference = Request.TransactionLogRefernce,
-                };
-                await _dbContext.AddAsync(disputeResponse);
-                await _dbContext.SaveChangesAsync();
-            }
-
-            if (transactionType == TransactionType.IpgTransaction)
-            {
-                var ipgTransaction = new IpgTransactionRequest
-                {
-                    date = Request.TransactionDate,
-                    maskedCardPan = Request.MaskCardPan,
-                    merchantCode = "",
-                    retrievalReferenceNumber = Request.RetrivalNumber,
-                    stan = Request.Stan,
-                };
-               var ipgResponse = _transaction.GetIpgTransaction(ipgTransaction);
-                if (ipgResponse == null)
-                {
-                    return result;
-                }
-                var createDisputeRequest = new CreateDisputeRequest
-                {
-                    comment = "",
-                    reasonCode = "RG",
-                    transactionReference = "",
-                    disputeAmount = Request.Amount,
-                    disputeAmountType = "Full",
-                    category = "Chargeback",
-                    transactionType = "",
-                }
-                var logcode = await _Dispute.CreateDispute(createDisputeRequest);
-                if (string.IsNullOrEmpty(logcode))
-                {
-                    return result;
-                }
-                
-                disputeRequestLog.IsDisputeCreated = true;
-                _dbContext.DisputeRequestLogs.Update(disputeRequestLog);
-                await _dbContext.SaveChangesAsync();
-
-                //save the logcode to the response log with status = Pending
-                var disputeResponse = new DisputeResponseLog
-                {
-                    logCode = logcode,
-                    status = "PENDING",
-                    transactionLogReference = Request.TransactionLogRefernce,
-                };
-                await _dbContext.AddAsync(disputeResponse);
-                await _dbContext.SaveChangesAsync();
-            }
-
-            if (transactionType == TransactionType.TransferTransaction)
-            {
-                var transferTransaction = new TransferTransactionRequest
-                {
-                   date = DateTime.Now,
-                   pan = Request.MaskCardPan,
-                   stan = Request.Stan,
-                   terminal = Request.TerminalId,
-                };
-                var transferResponse = _transaction.GetTransferTransaction(transferTransaction);
-                if (transferResponse == null)
-                {
-                    return result;
-                }
-                var createDisputeRequest = new CreateDisputeRequest
-                {
-                    comment = "",
-                    reasonCode = "RG",
-                    transactionReference = transferResponse.transactionReference,
-                    disputeAmount = Request.Amount,
-                    disputeAmountType = "Full",
-                    category = "Chargeback",
-                    transactionType = transferResponse.transactionType,
-                };
-                var logcode = await _Dispute.CreateDispute(createDisputeRequest);
-                if (string.IsNullOrEmpty(logcode))
-                {
-                    return result;
-                }
-
-                disputeRequestLog.IsDisputeCreated = true;
-                _dbContext.DisputeRequestLogs.Update(disputeRequestLog);
-                await _dbContext.SaveChangesAsync();
-
-                //save the logcode to the response log with status = Pending
-                var disputeResponse = new DisputeResponseLog
-                {
-                    logCode = logcode,
-                    status = "PENDING",
-                    transactionLogReference = Request.TransactionLogRefernce,
-                };
-                await _dbContext.AddAsync(disputeResponse);
-                await _dbContext.SaveChangesAsync();
-            }
-
             return result;
         }
 
-        public async Task<GenericResponse<DisputeResponseLogDto>> GetLoggedTransaction(string transactionReference)
+        public async Task<GenericResponse<DisputeResponseLogDto>> GetLoggedTransaction(string transactionLogReference)
         {
             var getResponse = await _dbContext.DisputeResponseLogs
                 .Include(x => x.evidence)
                 .Include(x => x.journal)
-                .FirstOrDefaultAsync(x => x.transactionLogReference == transactionReference);
+                .FirstOrDefaultAsync(x => x.transactionLogReference == transactionLogReference);
 
             if (getResponse == null)
             {
@@ -236,24 +105,20 @@ namespace DisputeResolutionCore.Implementation
                 };
                 journalList.Add(journalDto);
             }
-            var evidencelist = new List<EvidenceDto>();
-            foreach (var item in getResponse.evidence)
-            {
-                var evidenceDto = new EvidenceDto
-                {
-                    base64EncodedBinary = item.base64EncodedBinary,
-                    disputeId = item.disputeId,
-                    uuId = item.uuId,
-                    mimeType = item.mimeType,
-                    tags = item.tags,
-                };
-                evidencelist.Add(evidenceDto);
-            }
+             
 
             // map DisputeRequestLog Entity to DisputeRequestLogDto
             var disputeResponseLogDto = new DisputeResponseLogDto
             {
-                evidence = evidencelist,
+                evidence = getResponse.evidence.Select(x => new EvidenceDto
+                {
+                    base64EncodedBinary = x.base64EncodedBinary,
+                    disputeId = x.disputeId,
+                    uuId = x.uuId,
+                    mimeType = x.mimeType,
+                    tags = x.tags,
+                }).ToList(),
+               
                 journal = journalList,
                 logCode = getResponse.logCode,
                 transactionAmount = getResponse.transactionType,
@@ -299,6 +164,117 @@ namespace DisputeResolutionCore.Implementation
             };
         }
 
+        public async Task<(bool isCreated, string logcode)> StartInterswitchCall(DisputeResquestLog Request)
+        {
+            //INTERSWITCH CALL
+            //call get transaction
+            if (Request.TransactionType == TransactionType.AgencyBanking.ToString())
+            {
+                var agencyBankingRequest = new AgencyBankingRequest()
+                {
+                    date = Request.TransactionDate,
+                    pan = Request.MaskCardPan,
+                    stan = Request.Stan,
+                    terminal = Request.TerminalId,
+                };
+                //get the transaction from interswitch
+                var transactionResponse = await _transaction.GetAgencyBanking(agencyBankingRequest);
+
+                if (transactionResponse == null)
+                {
+                    return (false, "");
+                }
+
+                //create dispute
+                var createDisputeRequest = new CreateDisputeRequest
+                {
+                    comment = "",
+                    reasonCode = "RG",
+                    transactionReference = transactionResponse.transactionReference,
+                    disputeAmount = Request.Amount,
+                    disputeAmountType = "Full",
+                    category = "Chargeback",
+                    transactionType = transactionResponse.transactionType,
+                };
+                var logCode = await _Dispute.CreateDispute(createDisputeRequest);
+
+                if (string.IsNullOrEmpty(logCode))
+                {
+                    return (false, "");
+                }  
+                else
+                    return (true, logCode);
+
+            }
+
+           else if (Request.TransactionType == TransactionType.IpgTransaction.ToString())
+            {
+                var ipgTransaction = new IpgTransactionRequest
+                {
+                    date = Request.TransactionDate,
+                    maskedCardPan = Request.MaskCardPan,
+                    merchantCode = "",
+                    retrievalReferenceNumber = Request.RetrivalNumber,
+                    stan = Request.Stan,
+                };
+                var ipgResponse = _transaction.GetIpgTransaction(ipgTransaction);
+                if (ipgResponse == null)
+                {
+                    return (false, "");
+                }
+                var createDisputeRequest = new CreateDisputeRequest
+                {
+                    comment = "",
+                    reasonCode = "RG",
+                    transactionReference = ipgResponse.Result.transactionReference,
+                    disputeAmount = Request.Amount,
+                    disputeAmountType = "Full",
+                    category = "Chargeback",
+                    transactionType = ipgResponse.Result.transactionType,
+                };
+                var logcode = await _Dispute.CreateDispute(createDisputeRequest);
+                if (string.IsNullOrEmpty(logcode))
+                {
+                    return (false, "");
+                }
+                else
+                    return (true, logcode);
+            }
+            //if transaction type is transfer
+            else
+            {
+                var transferTransaction = new TransferTransactionRequest
+                {
+                    date = DateTime.Now,
+                    pan = Request.MaskCardPan,
+                    stan = Request.Stan,
+                    terminal = Request.TerminalId,
+                };
+                var transferResponse = _transaction.GetTransferTransaction(transferTransaction).Result;
+                if (transferResponse == null)
+                {
+                    return (false, "");
+                }
+                var createDisputeRequest = new CreateDisputeRequest
+                {
+                    comment = "",
+                    reasonCode = "RG",
+                    transactionReference = transferResponse.transactionReference,
+                    disputeAmount = Request.Amount,
+                    disputeAmountType = "Full",
+                    category = "Chargeback",
+                    transactionType = transferResponse.transactionType,
+                };
+                var logcode = await _Dispute.CreateDispute(createDisputeRequest);
+                if (string.IsNullOrEmpty(logcode))
+                {
+                    return (false, "");
+                }
+
+             return (true, logcode);
+            }
+        }
+
         private TransactionType GetTransactionType(string transactionInpute)
         {
             if (transactionInpute.Contains("3IPG"))
@@ -317,5 +293,24 @@ namespace DisputeResolutionCore.Implementation
             return TransactionType.Invalid;
         }
 
+
+       /* //call the method
+        var interswitchCall = await StartInterswitchCall(transactionType, request);
+
+            //if successful re-map isDisputeCreated = true and save the first table (request)
+            if (interswitchCall.isCreated)
+            {
+                disputeRequestLog.IsDisputeCreated = true;
+                //create a new reacord to track the response from interswitch
+                //save the logcode to the response log with status = Pending
+                var disputeResponse = new DisputeResponseLog
+                {
+                    logCode = interswitchCall.logcode,
+                    status = Status.PENDING.ToString(),
+                    transactionLogReference = request.TransactionLogRefernce,
+                };
+        await _dbContext.AddAsync(disputeResponse);
+        await _dbContext.SaveChangesAsync();*/
     }
 }
+

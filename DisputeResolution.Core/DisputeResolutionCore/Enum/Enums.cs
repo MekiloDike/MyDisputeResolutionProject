@@ -14,4 +14,9 @@ namespace DisputeResolutionCore.Enum
         TransferTransaction, //WFTR
         Invalid,
     }
+
+    public enum Status
+    {
+        PENDING
+    }
 }

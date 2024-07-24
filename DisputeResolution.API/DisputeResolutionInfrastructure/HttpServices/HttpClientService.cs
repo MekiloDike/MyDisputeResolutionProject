@@ -46,7 +46,7 @@ namespace DisputeResolutionInfrastructure.HttpServices
                 {
                     // Read the response content
                     string responseContent = await response.Content.ReadAsStringAsync();
-                    //deserialize to the response object
+                    //deserialize to the response object 
                     result = JsonConvert.DeserializeObject<T>(responseContent);
                     Console.WriteLine("Response: " + responseContent);
                     return result;
